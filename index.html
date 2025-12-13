@@ -10,14 +10,22 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+<!-- TradingView Widget -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#0a0a0a;color:#e5e7eb;}
 header, footer{padding:12px 20px;text-align:center;}
 .btn{padding:10px 18px;border-radius:20px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#000;font-weight:bold;border:none;cursor:pointer;margin-top:5px;}
-.card{background:#1f1f2a;padding:20px;margin:20px auto;border-radius:12px;max-width:400px;}
+.card{background:#1f1f2a;padding:20px;margin:20px auto;border-radius:12px;}
 input, select{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px solid #ccc;background:#111;color:#fff;}
 #dashboard{display:none;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;max-width:1200px;margin:auto;}
+.ticker{overflow:hidden;border-bottom:1px solid #444;}
+.ticker-track{display:flex;gap:40px;padding:10px 0;animation:scroll 20s linear infinite;}
+.ticker span{white-space:nowrap;color:#22c55e;font-weight:bold;}
+@keyframes scroll{from{transform:translateX(100%)} to{transform:translateX(-100%)}}
+h2,h3{margin:0 0 10px 0;}
 </style>
 </head>
 <body>
@@ -27,7 +35,7 @@ input, select{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px s
 </header>
 
 <!-- LOGIN / REGISTER -->
-<div id="authForms" class="card">
+<div id="authForms" class="card" style="max-width:400px;">
 <h3>Register</h3>
 <input id="reg-email" type="email" placeholder="Email">
 <input id="reg-pass" type="password" placeholder="Password">
@@ -43,20 +51,33 @@ input, select{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px s
 
 <!-- DASHBOARD -->
 <div id="dashboard">
-<h2 style="text-align:center;">Welcome to Your Account</h2>
 
-<!-- HYPE + INVEST -->
+<!-- LIVE TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span>BTC $<b id="btc"></b></span>
+    <span>ETH $<b id="eth"></b></span>
+    <span>LTC $<b id="ltc"></b></span>
+    <span>XRP $<b id="xrp"></b></span>
+    <span>GOLD $<b id="gold"></b></span>
+    <span>SILVER $<b id="silver"></b></span>
+    <span>PLATINUM $<b id="platinum"></b></span>
+  </div>
+</div>
+
+<!-- HYPE + DEPOSIT + PORTFOLIO -->
 <div class="grid">
-  <div class="card" style="background: linear-gradient(135deg, #f59e0b, #facc15); color:#000;">
+
+  <div class="card" style="background: linear-gradient(135deg,#f59e0b,#facc15); color:#000;">
     <h3>🔥 Total Users Joined</h3>
-    <p id="totalUsers" style="font-size:2rem; font-weight:bold;">0</p>
+    <p id="totalUsers" style="font-size:2rem;font-weight:bold;">0</p>
     <h3>💰 Total Invested</h3>
-    <p id="totalInvested" style="font-size:2rem; font-weight:bold;">$0</p>
+    <p id="totalInvested" style="font-size:2rem;font-weight:bold;">$0</p>
     <h3>🚀 Trending Profits</h3>
     <p id="trendingProfit" style="font-size:1.5rem;">BTC +12%, GOLD +4%</p>
   </div>
 
-  <div class="card" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+  <div class="card" style="background: linear-gradient(135deg,#22c55e,#16a34a);">
     <h3 style="color:#fff;">💎 Invest / Deposit</h3>
     <input id="invest-amount" type="number" placeholder="Amount to invest" />
     <select id="invest-asset">
@@ -75,15 +96,48 @@ input, select{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px s
       <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
     </table>
   </div>
+
+</div>
+
+<!-- REAL CHARTS -->
+<section class="grid">
+  <div class="card" id="tv-btc" style="height:400px;"></div>
+  <div class="card" id="tv-eth" style="height:400px;"></div>
+  <div class="card" id="tv-ltc" style="height:400px;"></div>
+  <div class="card" id="tv-xrp" style="height:400px;"></div>
+  <div class="card" id="tv-gold" style="height:400px;"></div>
+  <div class="card" id="tv-silver" style="height:400px;"></div>
+  <div class="card" id="tv-platinum" style="height:400px;"></div>
+</section>
+
+<!-- TRENDING TOKENS & NEWS -->
+<div class="grid">
+  <div class="card" style="background:#111">
+    <h3>📈 Trending Tokens</h3>
+    <ul id="trendingTokens">
+      <li>BNB +5.3%</li>
+      <li>ADA +3.1%</li>
+      <li>DOGE +12%</li>
+    </ul>
+  </div>
+  <div class="card" style="background:#111">
+    <h3>📰 Market News</h3>
+    <ul id="marketNews">
+      <li>Bitcoin hits $35,000</li>
+      <li>Gold prices surge amid uncertainty</li>
+      <li>Ethereum 2.0 launch attracts investors</li>
+    </ul>
+  </div>
 </div>
 
 <button class="btn" style="margin:20px auto; display:block;" onclick="logoutUser()">Logout</button>
+
 </div>
 
 <footer>© 2025 Pro Trading Dashboard</footer>
 
 <script>
-// Firebase config
+// Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB-aVVMfBNUoMWIK0ahfAG_c3wVGkpLtkM",
   authDomain: "protradingdashboard.firebaseapp.com",
@@ -97,87 +151,45 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-// Register
-function registerUser(){
-  const email = document.getElementById("reg-email").value;
-  const password = document.getElementById("reg-pass").value;
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      const user=userCredential.user;
-      db.ref('users/'+user.uid).set({
-        portfolio:{BTC:0,ETH:0,LTC:0,XRP:0,GOLD:0,SILVER:0,PLATINUM:0},
-        created:new Date().toISOString()
-      });
-      alert("Registration successful! Please login now.");
-    }).catch(e=>alert(e.message));
-}
+// Register/Login
+function registerUser(){const email=document.getElementById("reg-email").value;const password=document.getElementById("reg-pass").value;auth.createUserWithEmailAndPassword(email,password).then(userCredential=>{const user=userCredential.user;db.ref('users/'+user.uid).set({portfolio:{BTC:0,ETH:0,LTC:0,XRP:0,GOLD:0,SILVER:0,PLATINUM:0},created:new Date().toISOString()});alert("Registration successful! Please login.");}).catch(e=>alert(e.message));}
+function loginUser(){const email=document.getElementById("login-email").value;const password=document.getElementById("login-pass").value;auth.signInWithEmailAndPassword(email,password).then(userCredential=>{const user=userCredential.user;showDashboard(user.uid);}).catch(e=>alert(e.message));}
 
-// Login
-function loginUser(){
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-pass").value;
-  auth.signInWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      const user=userCredential.user;
-      showDashboard(user.uid);
-    }).catch(e=>alert(e.message));
-}
-
-// Show dashboard
-async function showDashboard(uid){
-  document.getElementById("authForms").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-  await loadPortfolio(uid);
-  updateHypeStats();
-}
-
-// Load portfolio
-async function loadPortfolio(uid){
-  const snapshot = await db.ref('users/'+uid+'/portfolio').get();
-  const table = document.getElementById("portfolioTable");
-  table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';
-  if(snapshot.exists()){
-    const portfolio = snapshot.val();
-    for(let asset in portfolio){
-      table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;
-    }
-  }
-}
+// Dashboard
+async function showDashboard(uid){document.getElementById("authForms").style.display="none";document.getElementById("dashboard").style.display="block";await loadPortfolio(uid);updateHypeStats();}
+async function loadPortfolio(uid){const snapshot=await db.ref('users/'+uid+'/portfolio').get();const table=document.getElementById("portfolioTable");table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';if(snapshot.exists()){const portfolio=snapshot.val();for(let asset in portfolio){table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;}}}
 
 // Deposit
-async function deposit(){
-  const amount = parseFloat(document.getElementById("invest-amount").value);
-  const asset = document.getElementById("invest-asset").value;
-  if(isNaN(amount)||amount<=0){alert("Enter a valid amount");return;}
-  const user = firebase.auth().currentUser;
-  if(!user){alert("Login first");return;}
-  const ref = db.ref('users/'+user.uid+'/portfolio/'+asset);
-  const snapshot = await ref.get();
-  const current = snapshot.exists() ? snapshot.val() : 0;
-  await ref.set(current+amount);
-  await loadPortfolio(user.uid);
-  alert(`Successfully invested $${amount} in ${asset}`);
-  updateHypeStats(amount);
-}
+async function deposit(){const amount=parseFloat(document.getElementById("invest-amount").value);const asset=document.getElementById("invest-asset").value;if(isNaN(amount)||amount<=0){alert("Enter a valid amount");return;}const user=firebase.auth().currentUser;if(!user){alert("Login first");return;}const ref=db.ref('users/'+user.uid+'/portfolio/'+asset);const snapshot=await ref.get();const current=snapshot.exists()?snapshot.val():0;await ref.set(current+amount);await loadPortfolio(user.uid);alert(`Successfully invested $${amount} in ${asset}`);updateHypeStats(amount);}
+function logoutUser(){auth.signOut().then(()=>{document.getElementById("authForms").style.display="block";document.getElementById("dashboard").style.display="none";});}
 
-// Logout
-function logoutUser(){
-  auth.signOut().then(()=>{
-    document.getElementById("authForms").style.display="block";
-    document.getElementById("dashboard").style.display="none";
-  });
-}
+// Hype Stats
+let totalUsers=1234,totalInvested=567890;
+function updateHypeStats(newAmount=0){totalInvested+=newAmount;document.getElementById("totalUsers").innerText=totalUsers.toLocaleString();document.getElementById("totalInvested").innerText="$"+totalInvested.toLocaleString();document.getElementById("trendingProfit").innerText=`BTC +${(Math.random()*15).toFixed(1)}%, GOLD +${(Math.random()*5).toFixed(1)}%`;}
 
-// Hype stats
-let totalUsers = 1234;
-let totalInvested = 567890;
-function updateHypeStats(newAmount=0){
-  totalInvested += newAmount;
-  document.getElementById("totalUsers").innerText = totalUsers.toLocaleString();
-  document.getElementById("totalInvested").innerText = "$"+totalInvested.toLocaleString();
-  document.getElementById("trendingProfit").innerText = `BTC +${(Math.random()*15).toFixed(1)}%, GOLD +${(Math.random()*5).toFixed(1)}%`;
+// Live Prices
+async function prices(){
+  const d=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd").then(r=>r.json());
+  document.getElementById("btc").innerText=d.bitcoin.usd.toLocaleString();
+  document.getElementById("eth").innerText=d.ethereum.usd.toLocaleString();
+  document.getElementById("ltc").innerText=d.litecoin.usd.toLocaleString();
+  document.getElementById("xrp").innerText=d.ripple.usd.toLocaleString();
+  document.getElementById("gold").innerText=(2350+Math.random()*5).toFixed(2);
+  document.getElementById("silver").innerText=(28+Math.random()*0.5).toFixed(2);
+  document.getElementById("platinum").innerText=(1020+Math.random()*5).toFixed(2);
 }
+prices(); setInterval(prices,8000);
+
+// TradingView charts
+function tv(id,symbol){new TradingView.widget({autosize:true,symbol:symbol,interval:"15",theme:"dark",style:"1",container_id:id});}
+tv("tv-btc","COINBASE:BTCUSD");
+tv("tv-eth","COINBASE:ETHUSD");
+tv("tv-ltc","COINBASE:LTCUSD");
+tv("tv-xrp","COINBASE:XRPUSD");
+tv("tv-gold","OANDA:XAUUSD");
+tv("tv-silver","OANDA:XAGUSD");
+tv("tv-platinum","OANDA:XPTUSD");
+
 </script>
-
 </body>
 </html>
