@@ -1,230 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CryptoTrade Dashboard</title>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Trading Dashboard</title>
 
 <style>
-:root {
-  --bg: #0b0f1a;
-  --card: #12182a;
-  --accent: #00ffa3;
-  --blue: #4facfe;
-  --pink: #ff4ecd;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:radial-gradient(circle at top,#111827,#020617);
+  color:#e5e7eb;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #1a1f36, #050816);
-  color: var(--text);
+/* Header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 20px;
+  border-bottom:1px solid #1f2937;
+}
+.btn{
+  padding:10px 18px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#facc15,#f59e0b);
+  color:#000;
+  font-weight:bold;
+  border:none;
+  cursor:pointer;
 }
 
-/* Layout */
-.app {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  height: 100vh;
+/* Ticker */
+.ticker{overflow:hidden;border-bottom:1px solid #1f2937}
+.ticker-track{
+  display:flex;
+  gap:40px;
+  padding:8px 0;
+  animation:scroll 20s linear infinite;
+}
+.ticker span{white-space:nowrap;color:#22c55e;font-weight:bold}
+@keyframes scroll{
+  from{transform:translateX(100%)}
+  to{transform:translateX(-100%)}
 }
 
-/* Sidebar */
-.sidebar {
-  background: #0d1224;
-  padding: 20px;
+/* Hero */
+.hero{
+  height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
 }
+.hero h1{font-size:3rem}
+.hero p{color:#9ca3af;margin:15px 0 25px}
 
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-  color: var(--accent);
-  margin-bottom: 30px;
+/* Dashboard */
+.dashboard{
+  max-width:1400px;
+  margin:auto;
+  padding:40px 15px;
 }
-
-.menu a {
-  display: block;
-  padding: 12px;
-  color: var(--muted);
-  text-decoration: none;
-  border-radius: 8px;
-  margin-bottom: 8px;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+  gap:20px;
 }
-
-.menu a:hover {
-  background: linear-gradient(90deg, var(--blue), var(--pink));
-  color: white;
+.card{
+  background:#0f172a;
+  padding:15px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,.6);
 }
+.card h3{text-align:center;margin-bottom:10px}
 
-/* Main */
-.main {
-  padding: 20px;
-  overflow-y: auto;
+table{
+  width:100%;
+  border-collapse:collapse;
 }
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+th,td{
+  padding:8px;
+  border-bottom:1px solid #1f2937;
 }
+.green{color:#22c55e}
+.red{color:#ef4444}
 
-.topbar h1 {
-  font-size: 22px;
-}
-
-.balance {
-  background: linear-gradient(135deg, #00ffa3, #4facfe);
-  padding: 12px 20px;
-  border-radius: 12px;
-  color: #000;
-  font-weight: bold;
-}
-
-/* Cards */
-.grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-.card {
-  background: var(--card);
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.4);
-}
-
-/* Market Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #1f2937;
-  font-size: 14px;
-}
-
-th {
-  color: var(--muted);
-  text-align: left;
-}
-
-.green { color: #00ffa3; }
-.red { color: #ff4e4e; }
-
-/* Responsive */
-@media(max-width: 900px) {
-  .app {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    display: none;
-  }
-  .grid {
-    grid-template-columns: 1fr;
-  }
+footer{
+  text-align:center;
+  padding:20px;
+  color:#9ca3af;
 }
 </style>
 </head>
 <body>
 
-<div class="app">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">⚡ CryptoTrade</div>
-    <nav class="menu">
-      <a href="#">Dashboard</a>
-      <a href="#">Markets</a>
-      <a href="#">Trade</a>
-      <a href="#">Portfolio</a>
-      <a href="#">Settings</a>
-    </nav>
-  </aside>
-
-  <!-- Main -->
-  <main class="main">
-    <div class="topbar">
-      <h1>BTC / USDT</h1>
-      <div class="balance">$12,486.66</div>
-    </div>
-
-    <div class="grid">
-
-      <!-- Chart -->
-      <div class="card">
-        <canvas id="priceChart" height="120"></canvas>
-      </div>
-
-      <!-- Market List -->
-      <div class="card">
-        <h3 style="margin-bottom:10px;">Market</h3>
-        <table>
-          <tr>
-            <th>Pair</th>
-            <th>Price</th>
-            <th>24h</th>
-          </tr>
-          <tr>
-            <td>BTC/USDT</td>
-            <td>$87,882</td>
-            <td class="green">+1.42%</td>
-          </tr>
-          <tr>
-            <td>ETH/USDT</td>
-            <td>$1,256</td>
-            <td class="green">+0.88%</td>
-          </tr>
-          <tr>
-            <td>XRP/USDT</td>
-            <td>$0.73</td>
-            <td class="red">-0.41%</td>
-          </tr>
-          <tr>
-            <td>SOL/USDT</td>
-            <td>$21.08</td>
-            <td class="green">+3.20%</td>
-          </tr>
-        </table>
-      </div>
-
-    </div>
-  </main>
-
+<!-- HEADER -->
+<div class="header">
+  <strong>⚡ Pro Trading</strong>
+  <div>
+    <button class="btn" onclick="login()">Login</button>
+    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+  </div>
 </div>
 
-<script>
-const ctx = document.getElementById('priceChart');
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span>BTC $<b id="btc"></b></span>
+    <span>ETH $<b id="eth"></b></span>
+    <span>GOLD $<b id="gold"></b></span>
+    <span>BTC $<b id="btc2"></b></span>
+    <span>ETH $<b id="eth2"></b></span>
+  </div>
+</div>
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['1AM','2AM','3AM','4AM','5AM','6AM','7AM','8AM'],
-    datasets: [{
-      label: 'BTC Price',
-      data: [87200, 87500, 87100, 87800, 87400, 88000, 88300, 87882],
-      borderColor: '#00ffa3',
-      backgroundColor: 'rgba(0,255,163,0.15)',
-      fill: true,
-      tension: 0.4
-    }]
-  },
-  options: {
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#9ca3af' } },
-      y: { ticks: { color: '#9ca3af' } }
-    }
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <h1>All-in-One Trading Platform</h1>
+    <p>Charts • Portfolio • Wallet • Swap</p>
+    <a href="#markets"><button class="btn">Enter Dashboard</button></a>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="markets" class="dashboard">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Gold (XAU/USD)</h3>
+      <div id="tv-gold" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Bitcoin (BTC/USDT)</h3>
+      <div id="tv-btc" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Ethereum (ETH/USDT)</h3>
+      <div id="tv-eth" style="height:400px"></div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="card">
+      <h3>Portfolio</h3>
+      <table>
+        <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
+        <tr><td>BTC</td><td>0.25</td><td class="green">+12.4%</td></tr>
+        <tr><td>ETH</td><td>2.1</td><td class="green">+6.8%</td></tr>
+        <tr><td>GOLD</td><td>1.5 oz</td><td class="red">-1.2%</td></tr>
+      </table>
+    </div>
+
+    <!-- BINANCE SWAP -->
+    <div class="card">
+      <h3>Binance Swap</h3>
+      <iframe
+        src="https://www.binance.com/en/swap?theme=dark"
+        style="width:100%;height:400px;border:none;border-radius:12px;">
+      </iframe>
+    </div>
+
+  </div>
+</section>
+
+<footer>© 2025 Pro Trading Dashboard</footer>
+
+<!-- TradingView -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+function tv(id,symbol){
+  new TradingView.widget({
+    autosize:true,
+    symbol:symbol,
+    interval:"15",
+    theme:"dark",
+    style:"1",
+    container_id:id
+  });
+}
+tv("tv-gold","OANDA:XAUUSD");
+tv("tv-btc","BINANCE:BTCUSDT");
+tv("tv-eth","BINANCE:ETHUSDT");
+</script>
+
+<!-- LIVE PRICES -->
+<script>
+async function prices(){
+  const d = await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd"
+  ).then(r=>r.json());
+
+  const btc=d.bitcoin.usd, eth=d.ethereum.usd;
+  const gold=(2350+Math.random()*5).toFixed(2);
+
+  document.getElementById("btc").innerText=btc.toLocaleString();
+  document.getElementById("btc2").innerText=btc.toLocaleString();
+  document.getElementById("eth").innerText=eth.toLocaleString();
+  document.getElementById("eth2").innerText=eth.toLocaleString();
+  document.getElementById("gold").innerText=gold;
+}
+prices(); setInterval(prices,8000);
+</script>
+
+<!-- LOGIN + WALLET -->
+<script>
+function login(){
+  localStorage.setItem("logged","yes");
+  alert("Login successful (demo)");
+}
+
+async function connectWallet(){
+  if(!window.ethereum){
+    alert("MetaMask not installed");
+    return;
   }
-});
+  const accounts = await ethereum.request({method:'eth_requestAccounts'});
+  alert("Wallet connected:\n"+accounts[0]);
+}
 </script>
 
 </body>
