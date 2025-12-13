@@ -3,222 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Trading Dashboard</title>
+<title>Advanced Trading Dashboard</title>
 
 <style>
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:radial-gradient(circle at top,#111827,#020617);
+  background:#020617;
   color:#e5e7eb;
 }
-
-/* Header */
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 20px;
-  border-bottom:1px solid #1f2937;
+  position:sticky;top:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 18px;
+  background:#020617;border-bottom:1px solid #1f2937;
 }
 .btn{
-  padding:10px 18px;
-  border-radius:20px;
+  padding:8px 14px;border-radius:20px;
   background:linear-gradient(135deg,#facc15,#f59e0b);
-  color:#000;
-  font-weight:bold;
-  border:none;
-  cursor:pointer;
+  color:#000;font-weight:bold;border:none;cursor:pointer;
 }
-
-/* Ticker */
-.ticker{overflow:hidden;border-bottom:1px solid #1f2937}
-.ticker-track{
-  display:flex;
-  gap:40px;
-  padding:8px 0;
-  animation:scroll 20s linear infinite;
-}
-.ticker span{white-space:nowrap;color:#22c55e;font-weight:bold}
-@keyframes scroll{
-  from{transform:translateX(100%)}
-  to{transform:translateX(-100%)}
-}
-
-/* Hero */
-.hero{
-  height:80vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-.hero h1{font-size:3rem}
-.hero p{color:#9ca3af;margin:15px 0 25px}
-
-/* Dashboard */
-.dashboard{
-  max-width:1400px;
-  margin:auto;
-  padding:40px 15px;
-}
+.app{max-width:1400px;margin:auto}
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-  gap:20px;
+  gap:20px;padding:20px;
 }
 .card{
   background:#0f172a;
-  padding:15px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,.6);
+  padding:14px;border-radius:18px;
+  box-shadow:0 0 30px rgba(0,0,0,.6);
 }
 .card h3{text-align:center;margin-bottom:10px}
-
-table{
-  width:100%;
-  border-collapse:collapse;
+input{
+  width:100%;padding:8px;margin-bottom:8px;
+  border-radius:8px;border:none;
 }
-th,td{
-  padding:8px;
-  border-bottom:1px solid #1f2937;
-}
-.green{color:#22c55e}
-.red{color:#ef4444}
-
-footer{
-  text-align:center;
-  padding:20px;
-  color:#9ca3af;
-}
+footer{text-align:center;padding:20px;color:#9ca3af}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <strong>⚡ Pro Trading</strong>
+  <strong>⚡ TradePro</strong>
   <div>
-    <button class="btn" onclick="login()">Login</button>
-    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+    <button class="btn" onclick="showLogin()">Login</button>
+    <button class="btn" onclick="connectWallet()">Wallet</button>
   </div>
 </div>
 
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track">
-    <span>BTC $<b id="btc"></b></span>
-    <span>ETH $<b id="eth"></b></span>
-    <span>GOLD $<b id="gold"></b></span>
-    <span>BTC $<b id="btc2"></b></span>
-    <span>ETH $<b id="eth2"></b></span>
-  </div>
+<div class="app">
+
+<!-- LOGIN -->
+<div id="loginBox" class="card" style="max-width:350px;margin:20px auto;display:none">
+  <h3>Login</h3>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button class="btn" style="width:100%" onclick="login()">Login / Register</button>
+  <p id="userStatus"></p>
 </div>
 
-<!-- HERO -->
-<section class="hero">
-  <div>
-    <h1>All-in-One Trading Platform</h1>
-    <p>Charts • Portfolio • Wallet • Swap</p>
-    <a href="#markets"><button class="btn">Enter Dashboard</button></a>
+<div class="grid">
+
+  <!-- BTC CHART -->
+  <div class="card">
+    <h3>BTC Chart</h3>
+    <div id="tv-btc" style="height:400px"></div>
   </div>
-</section>
 
-<!-- DASHBOARD -->
-<section id="markets" class="dashboard">
-  <div class="grid">
-
-    <div class="card">
-      <h3>Gold (XAU/USD)</h3>
-      <div id="tv-gold" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Bitcoin (BTC/USDT)</h3>
-      <div id="tv-btc" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Ethereum (ETH/USDT)</h3>
-      <div id="tv-eth" style="height:400px"></div>
-    </div>
-
-    <!-- PORTFOLIO -->
-    <div class="card">
-      <h3>Portfolio</h3>
-      <table>
-        <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
-        <tr><td>BTC</td><td>0.25</td><td class="green">+12.4%</td></tr>
-        <tr><td>ETH</td><td>2.1</td><td class="green">+6.8%</td></tr>
-        <tr><td>GOLD</td><td>1.5 oz</td><td class="red">-1.2%</td></tr>
-      </table>
-    </div>
-
-    <!-- BINANCE SWAP -->
-    <div class="card">
-      <h3>Binance Swap</h3>
-      <iframe
-        src="https://www.binance.com/en/swap?theme=dark"
-        style="width:100%;height:400px;border:none;border-radius:12px;">
-      </iframe>
-    </div>
-
+  <!-- ORDER BOOK -->
+  <div class="card">
+    <h3>BTC Order Book</h3>
+    <div id="tv-order" style="height:400px"></div>
   </div>
-</section>
 
-<footer>© 2025 Pro Trading Dashboard</footer>
+  <!-- MARKET DEPTH -->
+  <div class="card">
+    <h3>BTC Market Depth</h3>
+    <div id="tv-depth" style="height:400px"></div>
+  </div>
+
+  <!-- BINANCE SWAP (REFERRAL READY) -->
+  <div class="card">
+    <h3>Swap (Binance)</h3>
+    <iframe
+      src="https://www.binance.com/en/swap?ref=YOUR_REF_CODE"
+      style="width:100%;height:420px;border:none;border-radius:12px">
+    </iframe>
+    <p style="font-size:12px;color:#9ca3af;text-align:center">
+      Earn commission via Binance referral
+    </p>
+  </div>
+
+</div>
+</div>
+
+<footer>© 2025 Advanced Trading Dashboard</footer>
 
 <!-- TradingView -->
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-function tv(id,symbol){
-  new TradingView.widget({
-    autosize:true,
-    symbol:symbol,
-    interval:"15",
-    theme:"dark",
-    style:"1",
-    container_id:id
-  });
-}
-tv("tv-gold","OANDA:XAUUSD");
-tv("tv-btc","BINANCE:BTCUSDT");
-tv("tv-eth","BINANCE:ETHUSDT");
+new TradingView.widget({
+  autosize:true,
+  symbol:"BINANCE:BTCUSDT",
+  interval:"15",
+  theme:"dark",
+  style:"1",
+  container_id:"tv-btc"
+});
+
+new TradingView.widget({
+  autosize:true,
+  symbol:"BINANCE:BTCUSDT",
+  theme:"dark",
+  container_id:"tv-order",
+  studies:["OrderBook"]
+});
+
+new TradingView.widget({
+  autosize:true,
+  symbol:"BINANCE:BTCUSDT",
+  theme:"dark",
+  container_id:"tv-depth",
+  studies:["MarketDepth"]
+});
 </script>
 
-<!-- LIVE PRICES -->
+<!-- FIREBASE LOGIN -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 <script>
-async function prices(){
-  const d = await fetch(
-    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd"
-  ).then(r=>r.json());
+/* 🔥 PASTE YOUR FIREBASE CONFIG HERE */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
+};
 
-  const btc=d.bitcoin.usd, eth=d.ethereum.usd;
-  const gold=(2350+Math.random()*5).toFixed(2);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-  document.getElementById("btc").innerText=btc.toLocaleString();
-  document.getElementById("btc2").innerText=btc.toLocaleString();
-  document.getElementById("eth").innerText=eth.toLocaleString();
-  document.getElementById("eth2").innerText=eth.toLocaleString();
-  document.getElementById("gold").innerText=gold;
+function showLogin(){
+  document.getElementById("loginBox").style.display="block";
 }
-prices(); setInterval(prices,8000);
-</script>
 
-<!-- LOGIN + WALLET -->
-<script>
 function login(){
-  localStorage.setItem("logged","yes");
-  alert("Login successful (demo)");
-}
+  const email=document.getElementById("email").value;
+  const pass=document.getElementById("password").value;
 
+  auth.signInWithEmailAndPassword(email,pass)
+    .catch(()=>auth.createUserWithEmailAndPassword(email,pass))
+    .then(u=>{
+      document.getElementById("userStatus").innerText =
+        "Logged in as "+u.user.email;
+    });
+}
+</script>
+
+<script>
 async function connectWallet(){
-  if(!window.ethereum){
-    alert("MetaMask not installed");
-    return;
-  }
-  const accounts = await ethereum.request({method:'eth_requestAccounts'});
-  alert("Wallet connected:\n"+accounts[0]);
+  if(!window.ethereum) return alert("Install MetaMask");
+  const a=await ethereum.request({method:"eth_requestAccounts"});
+  alert("Wallet connected:\n"+a[0]);
 }
 </script>
 
