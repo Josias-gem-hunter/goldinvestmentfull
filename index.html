@@ -1,44 +1,15 @@
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script>
-
- // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyB8bveQhIVVJILED7oBk_1Hv1YBzn0PF3Q",
-  authDomain: "investment-gold-full-18f95.firebaseapp.com",
-  projectId: "investment-gold-full-18f95",
-  storageBucket: "investment-gold-full-18f95.firebasestorage.app",
-  messagingSenderId: "673660699554",
-  appId: "1:673660699554:web:fcb6862c6aafaa7e01e8fb",
-  measurementId: "G-9HJM2FSGNP"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Trading Dashboard</title>
+
+<!-- Firebase SDKs (compat for simplicity) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
 body{
   margin:0;
@@ -46,7 +17,6 @@ body{
   background:radial-gradient(circle at top,#111827,#020617);
   color:#e5e7eb;
 }
-
 /* Header */
 .header{
   display:flex;
@@ -64,7 +34,6 @@ body{
   border:none;
   cursor:pointer;
 }
-
 /* Ticker */
 .ticker{overflow:hidden;border-bottom:1px solid #1f2937}
 .ticker-track{
@@ -78,7 +47,6 @@ body{
   from{transform:translateX(100%)}
   to{transform:translateX(-100%)}
 }
-
 /* Hero */
 .hero{
   height:60vh;
@@ -89,7 +57,6 @@ body{
 }
 .hero h1{font-size:3rem}
 .hero p{color:#9ca3af;margin:15px 0 25px}
-
 /* Dashboard */
 .dashboard{
   max-width:1400px;
@@ -108,7 +75,6 @@ body{
   box-shadow:0 0 40px rgba(0,0,0,.6);
 }
 .card h3{text-align:center;margin-bottom:10px}
-
 table{
   width:100%;
   border-collapse:collapse;
@@ -119,7 +85,6 @@ th,td{
 }
 .green{color:#22c55e}
 .red{color:#ef4444}
-
 footer{
   text-align:center;
   padding:20px;
@@ -133,8 +98,24 @@ footer{
 <div class="header">
   <strong>⚡ Pro Trading</strong>
   <div>
-    <button class="btn" onclick="login()">Login</button>
+    <button class="btn" onclick="showLogin()">Login/Register</button>
     <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+  </div>
+</div>
+
+<!-- LOGIN / REGISTER FORMS -->
+<div id="authForms" style="max-width:400px;margin:20px auto;display:none;">
+  <div class="card">
+    <h3>Register</h3>
+    <input id="reg-email" type="email" placeholder="Email" style="width:100%;margin:5px 0;padding:8px;">
+    <input id="reg-pass" type="password" placeholder="Password" style="width:100%;margin:5px 0;padding:8px;">
+    <button class="btn" onclick="registerUser()">Register</button>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <h3>Login</h3>
+    <input id="login-email" type="email" placeholder="Email" style="width:100%;margin:5px 0;padding:8px;">
+    <input id="login-pass" type="password" placeholder="Password" style="width:100%;margin:5px 0;padding:8px;">
+    <button class="btn" onclick="loginUser()">Login</button>
   </div>
 </div>
 
@@ -163,57 +144,21 @@ footer{
 <!-- DASHBOARD -->
 <section id="markets" class="dashboard">
   <div class="grid">
+    <div class="card"><h3>Bitcoin (BTC/USD)</h3><div id="tv-btc" style="height:400px"></div></div>
+    <div class="card"><h3>Ethereum (ETH/USD)</h3><div id="tv-eth" style="height:400px"></div></div>
+    <div class="card"><h3>Litecoin (LTC/USD)</h3><div id="tv-ltc" style="height:400px"></div></div>
+    <div class="card"><h3>XRP (XRP/USD)</h3><div id="tv-xrp" style="height:400px"></div></div>
+    <div class="card"><h3>Gold (XAU/USD)</h3><div id="tv-gold" style="height:400px"></div></div>
+    <div class="card"><h3>Silver (XAG/USD)</h3><div id="tv-silver" style="height:400px"></div></div>
+    <div class="card"><h3>Platinum (XPT/USD)</h3><div id="tv-platinum" style="height:400px"></div></div>
 
-    <div class="card">
-      <h3>Bitcoin (BTC/USD)</h3>
-      <div id="tv-btc" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Ethereum (ETH/USD)</h3>
-      <div id="tv-eth" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Litecoin (LTC/USD)</h3>
-      <div id="tv-ltc" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>XRP (XRP/USD)</h3>
-      <div id="tv-xrp" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Gold (XAU/USD)</h3>
-      <div id="tv-gold" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Silver (XAG/USD)</h3>
-      <div id="tv-silver" style="height:400px"></div>
-    </div>
-
-    <div class="card">
-      <h3>Platinum (XPT/USD)</h3>
-      <div id="tv-platinum" style="height:400px"></div>
-    </div>
-
-    <!-- PORTFOLIO -->
+    <!-- Portfolio Table -->
     <div class="card">
       <h3>Portfolio</h3>
-      <table>
+      <table id="portfolioTable">
         <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
-        <tr><td>BTC</td><td>0.25</td><td class="green">+12.4%</td></tr>
-        <tr><td>ETH</td><td>2.1</td><td class="green">+6.8%</td></tr>
-        <tr><td>LTC</td><td>10</td><td class="green">+3.2%</td></tr>
-        <tr><td>XRP</td><td>500</td><td class="red">-2.1%</td></tr>
-        <tr><td>GOLD</td><td>1.5 oz</td><td class="red">-1.2%</td></tr>
-        <tr><td>SILVER</td><td>20 oz</td><td class="green">+0.5%</td></tr>
-        <tr><td>PLATINUM</td><td>5 oz</td><td class="green">+1.1%</td></tr>
       </table>
     </div>
-
   </div>
 </section>
 
@@ -233,115 +178,98 @@ function tv(id,symbol){
   });
 }
 
-// Cryptocurrencies
+// Cryptos
 tv("tv-btc","COINBASE:BTCUSD");
 tv("tv-eth","COINBASE:ETHUSD");
 tv("tv-ltc","COINBASE:LTCUSD");
 tv("tv-xrp","COINBASE:XRPUSD");
-
 // Metals
 tv("tv-gold","OANDA:XAUUSD");
 tv("tv-silver","OANDA:XAGUSD");
 tv("tv-platinum","OANDA:XPTUSD");
 </script>
 
-<!-- LIVE PRICES -->
+<!-- Live Prices -->
 <script>
 async function prices(){
   const d = await fetch(
     "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd"
   ).then(r=>r.json());
-
-  const btc=d.bitcoin.usd,
-        eth=d.ethereum.usd,
-        ltc=d.litecoin.usd,
-        xrp=d.ripple.usd;
-
-  const gold=(2350+Math.random()*5).toFixed(2);
-  const silver=(28+Math.random()*0.5).toFixed(2);
-  const platinum=(1020+Math.random()*5).toFixed(2);
-
-  document.getElementById("btc").innerText=btc.toLocaleString();
-  document.getElementById("eth").innerText=eth.toLocaleString();
-  document.getElementById("ltc").innerText=ltc.toLocaleString();
-  document.getElementById("xrp").innerText=xrp.toLocaleString();
-  document.getElementById("gold").innerText=gold;
-  document.getElementById("silver").innerText=silver;
-  document.getElementById("platinum").innerText=platinum;
+  document.getElementById("btc").innerText=d.bitcoin.usd.toLocaleString();
+  document.getElementById("eth").innerText=d.ethereum.usd.toLocaleString();
+  document.getElementById("ltc").innerText=d.litecoin.usd.toLocaleString();
+  document.getElementById("xrp").innerText=d.ripple.usd.toLocaleString();
+  document.getElementById("gold").innerText=(2350+Math.random()*5).toFixed(2);
+  document.getElementById("silver").innerText=(28+Math.random()*0.5).toFixed(2);
+  document.getElementById("platinum").innerText=(1020+Math.random()*5).toFixed(2);
 }
 prices(); setInterval(prices,8000);
 </script>
 
-<!-- LOGIN + WALLET -->
+<!-- Firebase Auth + DB -->
 <script>
-function login(){
-  localStorage.setItem("logged","yes");
-  alert("Register first (real)");
+const firebaseConfig = {
+  apiKey: "AIzaSyB8bveQhIVVJILED7oBk_1Hv1YBzn0PF3Q",
+  authDomain: "investment-gold-full-18f95.firebaseapp.com",
+  databaseURL: "https://investment-gold-full-18f95-default-rtdb.firebaseio.com",
+  projectId: "investment-gold-full-18f95",
+  storageBucket: "investment-gold-full-18f95.appspot.com",
+  messagingSenderId: "673660699554",
+  appId: "1:673660699554:web:fcb6862c6aafaa7e01e8fb"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
 
-  <div class="card">
-  <h3>Register</h3>
-  <input id="reg-email" type="email" placeholder="Email">
-  <input id="reg-pass" type="password" placeholder="Password">
-  <button class="btn" onclick="registerUser()">Register</button>
-</div>
-
-<div class="card">
-  <h3>Login</h3>
-  <input id="login-email" type="email" placeholder="Email">
-  <input id="login-pass" type="password" placeholder="Password">
-  <button class="btn" onclick="loginUser()">Login</button>
-</div>
-
+function showLogin(){
+  document.getElementById("authForms").style.display = "block";
 }
-<script>
+
+// Register
 function registerUser(){
   const email = document.getElementById("reg-email").value;
   const password = document.getElementById("reg-pass").value;
-  
-  firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      const user = userCredential.user;
-      // Save initial portfolio
-      firebase.database().ref('users/' + user.uid).set({
-        portfolio: { BTC:0, ETH:0, GOLD:0 },
-        created: new Date().toISOString()
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(userCredential=>{
+      const user=userCredential.user;
+      db.ref('users/'+user.uid).set({
+        portfolio:{BTC:0,ETH:0,LTC:0,XRP:0,GOLD:0,SILVER:0,PLATINUM:0},
+        created:new Date().toISOString()
       });
       alert("Registration successful!");
     })
-    .catch(error => alert(error.message));
+    .catch(e=>alert(e.message));
 }
 
+// Login
 function loginUser(){
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-pass").value;
-  
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      const user = userCredential.user;
+  auth.signInWithEmailAndPassword(email,password)
+    .then(userCredential=>{
+      const user=userCredential.user;
       alert("Login successful!");
-      // You can now load the portfolio for this user
       loadPortfolio(user.uid);
     })
-    .catch(error => alert(error.message));
+    .catch(e=>alert(e.message));
 }
 
-// Example: load user portfolio and populate table
-  
+// Load portfolio
 async function loadPortfolio(uid){
-  const snapshot = await db.ref('users/' + uid + '/portfolio').get();
+  const snapshot = await db.ref('users/'+uid+'/portfolio').get();
   if(snapshot.exists()){
     const portfolio = snapshot.val();
-    console.log("Portfolio:", portfolio);
-    // Update your portfolio table here
+    const table = document.getElementById("portfolioTable");
+    table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';
+    for(let asset in portfolio){
+      table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;
+    }
   }
 }
-</script>
 
+// Connect Wallet
 async function connectWallet(){
-  if(!window.ethereum){
-    alert("MetaMask not installed");
-    return;
-  }
+  if(!window.ethereum){ alert("MetaMask not installed"); return; }
   const accounts = await ethereum.request({method:'eth_requestAccounts'});
   alert("Wallet connected:\n"+accounts[0]);
 }
