@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CryptoTrade Dashboard</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --bg: #0b0f1a;
+  --card: #12182a;
+  --accent: #00ffa3;
+  --blue: #4facfe;
+  --pink: #ff4ecd;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #1a1f36, #050816);
+  color: var(--text);
+}
+
+/* Layout */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background: #0d1224;
+  padding: 20px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+
+.menu a {
+  display: block;
+  padding: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.menu a:hover {
+  background: linear-gradient(90deg, var(--blue), var(--pink));
+  color: white;
+}
+
+/* Main */
+.main {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.topbar h1 {
+  font-size: 22px;
+}
+
+.balance {
+  background: linear-gradient(135deg, #00ffa3, #4facfe);
+  padding: 12px 20px;
+  border-radius: 12px;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Cards */
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
+
+/* Market Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #1f2937;
+  font-size: 14px;
+}
+
+th {
+  color: var(--muted);
+  text-align: left;
+}
+
+.green { color: #00ffa3; }
+.red { color: #ff4e4e; }
+
+/* Responsive */
+@media(max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    display: none;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">⚡ CryptoTrade</div>
+    <nav class="menu">
+      <a href="#">Dashboard</a>
+      <a href="#">Markets</a>
+      <a href="#">Trade</a>
+      <a href="#">Portfolio</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <h1>BTC / USDT</h1>
+      <div class="balance">$12,486.66</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Chart -->
+      <div class="card">
+        <canvas id="priceChart" height="120"></canvas>
+      </div>
+
+      <!-- Market List -->
+      <div class="card">
+        <h3 style="margin-bottom:10px;">Market</h3>
+        <table>
+          <tr>
+            <th>Pair</th>
+            <th>Price</th>
+            <th>24h</th>
+          </tr>
+          <tr>
+            <td>BTC/USDT</td>
+            <td>$87,882</td>
+            <td class="green">+1.42%</td>
+          </tr>
+          <tr>
+            <td>ETH/USDT</td>
+            <td>$1,256</td>
+            <td class="green">+0.88%</td>
+          </tr>
+          <tr>
+            <td>XRP/USDT</td>
+            <td>$0.73</td>
+            <td class="red">-0.41%</td>
+          </tr>
+          <tr>
+            <td>SOL/USDT</td>
+            <td>$21.08</td>
+            <td class="green">+3.20%</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+const ctx = document.getElementById('priceChart');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: ['1AM','2AM','3AM','4AM','5AM','6AM','7AM','8AM'],
+    datasets: [{
+      label: 'BTC Price',
+      data: [87200, 87500, 87100, 87800, 87400, 88000, 88300, 87882],
+      borderColor: '#00ffa3',
+      backgroundColor: 'rgba(0,255,163,0.15)',
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#9ca3af' } },
+      y: { ticks: { color: '#9ca3af' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
