@@ -1,3 +1,24 @@
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -242,7 +263,65 @@ prices(); setInterval(prices,8000);
 function login(){
   localStorage.setItem("logged","yes");
   alert("Register first (real)");
+
+  <div class="card">
+  <h3>Register</h3>
+  <input id="reg-email" type="email" placeholder="Email">
+  <input id="reg-pass" type="password" placeholder="Password">
+  <button class="btn" onclick="registerUser()">Register</button>
+</div>
+
+<div class="card">
+  <h3>Login</h3>
+  <input id="login-email" type="email" placeholder="Email">
+  <input id="login-pass" type="password" placeholder="Password">
+  <button class="btn" onclick="loginUser()">Login</button>
+</div>
+
 }
+<script>
+function registerUser(){
+  const email = document.getElementById("reg-email").value;
+  const password = document.getElementById("reg-pass").value;
+  
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      const user = userCredential.user;
+      // Save initial portfolio
+      firebase.database().ref('users/' + user.uid).set({
+        portfolio: { BTC:0, ETH:0, GOLD:0 },
+        created: new Date().toISOString()
+      });
+      alert("Registration successful!");
+    })
+    .catch(error => alert(error.message));
+}
+
+function loginUser(){
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-pass").value;
+  
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      const user = userCredential.user;
+      alert("Login successful!");
+      // You can now load the portfolio for this user
+      loadPortfolio(user.uid);
+    })
+    .catch(error => alert(error.message));
+}
+
+// Example: load user portfolio and populate table
+  
+async function loadPortfolio(uid){
+  const snapshot = await db.ref('users/' + uid + '/portfolio').get();
+  if(snapshot.exists()){
+    const portfolio = snapshot.val();
+    console.log("Portfolio:", portfolio);
+    // Update your portfolio table here
+  }
+}
+</script>
 
 async function connectWallet(){
   if(!window.ethereum){
