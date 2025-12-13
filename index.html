@@ -5,91 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Trading Dashboard</title>
 
-<!-- Firebase SDKs (compat for simplicity) -->
+<!-- Firebase SDKs (compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:radial-gradient(circle at top,#111827,#020617);
-  color:#e5e7eb;
-}
-/* Header */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 20px;
-  border-bottom:1px solid #1f2937;
-}
-.btn{
-  padding:10px 18px;
-  border-radius:20px;
-  background:linear-gradient(135deg,#facc15,#f59e0b);
-  color:#000;
-  font-weight:bold;
-  border:none;
-  cursor:pointer;
-}
-/* Ticker */
+body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#111827,#020617);color:#e5e7eb;}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1f2937;}
+.btn{padding:10px 18px;border-radius:20px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#000;font-weight:bold;border:none;cursor:pointer;}
 .ticker{overflow:hidden;border-bottom:1px solid #1f2937}
-.ticker-track{
-  display:flex;
-  gap:40px;
-  padding:8px 0;
-  animation:scroll 20s linear infinite;
-}
+.ticker-track{display:flex;gap:40px;padding:8px 0;animation:scroll 20s linear infinite;}
 .ticker span{white-space:nowrap;color:#22c55e;font-weight:bold}
-@keyframes scroll{
-  from{transform:translateX(100%)}
-  to{transform:translateX(-100%)}
-}
-/* Hero */
-.hero{
-  height:60vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
+@keyframes scroll{from{transform:translateX(100%)} to{transform:translateX(-100%)}}
+.hero{height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;}
 .hero h1{font-size:3rem}
 .hero p{color:#9ca3af;margin:15px 0 25px}
-/* Dashboard */
-.dashboard{
-  max-width:1400px;
-  margin:auto;
-  padding:40px 15px;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-  gap:20px;
-}
-.card{
-  background:#0f172a;
-  padding:15px;
-  border-radius:20px;
-  box-shadow:0 0 40px rgba(0,0,0,.6);
-}
+.dashboard{max-width:1400px;margin:auto;padding:40px 15px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;}
+.card{background:#0f172a;padding:15px;border-radius:20px;box-shadow:0 0 40px rgba(0,0,0,.6);}
 .card h3{text-align:center;margin-bottom:10px}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:8px;
-  border-bottom:1px solid #1f2937;
-}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:8px;border-bottom:1px solid #1f2937;}
 .green{color:#22c55e}
 .red{color:#ef4444}
-footer{
-  text-align:center;
-  padding:20px;
-  color:#9ca3af;
-}
+footer{text-align:center;padding:20px;color:#9ca3af;}
+input{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px solid #ccc;background:#1f2937;color:#fff;}
 </style>
 </head>
 <body>
@@ -107,14 +48,14 @@ footer{
 <div id="authForms" style="max-width:400px;margin:20px auto;display:none;">
   <div class="card">
     <h3>Register</h3>
-    <input id="reg-email" type="email" placeholder="Email" style="width:100%;margin:5px 0;padding:8px;">
-    <input id="reg-pass" type="password" placeholder="Password" style="width:100%;margin:5px 0;padding:8px;">
+    <input id="reg-email" type="email" placeholder="Email">
+    <input id="reg-pass" type="password" placeholder="Password">
     <button class="btn" onclick="registerUser()">Register</button>
   </div>
   <div class="card" style="margin-top:10px;">
     <h3>Login</h3>
-    <input id="login-email" type="email" placeholder="Email" style="width:100%;margin:5px 0;padding:8px;">
-    <input id="login-pass" type="password" placeholder="Password" style="width:100%;margin:5px 0;padding:8px;">
+    <input id="login-email" type="email" placeholder="Email">
+    <input id="login-pass" type="password" placeholder="Password">
     <button class="btn" onclick="loginUser()">Login</button>
   </div>
 </div>
@@ -192,9 +133,7 @@ tv("tv-platinum","OANDA:XPTUSD");
 <!-- Live Prices -->
 <script>
 async function prices(){
-  const d = await fetch(
-    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd"
-  ).then(r=>r.json());
+  const d = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd").then(r=>r.json());
   document.getElementById("btc").innerText=d.bitcoin.usd.toLocaleString();
   document.getElementById("eth").innerText=d.ethereum.usd.toLocaleString();
   document.getElementById("ltc").innerText=d.litecoin.usd.toLocaleString();
@@ -221,9 +160,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-function showLogin(){
-  document.getElementById("authForms").style.display = "block";
-}
+function showLogin(){ document.getElementById("authForms").style.display = "block"; }
 
 // Register
 function registerUser(){
@@ -237,8 +174,7 @@ function registerUser(){
         created:new Date().toISOString()
       });
       alert("Registration successful!");
-    })
-    .catch(e=>alert(e.message));
+    }).catch(e=>alert(e.message));
 }
 
 // Login
@@ -250,8 +186,7 @@ function loginUser(){
       const user=userCredential.user;
       alert("Login successful!");
       loadPortfolio(user.uid);
-    })
-    .catch(e=>alert(e.message));
+    }).catch(e=>alert(e.message));
 }
 
 // Load portfolio
