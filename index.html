@@ -106,6 +106,82 @@ async function showDashboard(uid){
     table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';
     for(let asset in portfolio){
       table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;
+
+<!-- HYPE / INVEST CARDS -->
+<section class="dashboard">
+  <div class="grid">
+    <!-- Hype Info -->
+    <div class="card" style="background: linear-gradient(135deg, #f59e0b, #facc15); color: #000;">
+      <h3>🔥 Total Users Joined</h3>
+      <p id="totalUsers" style="font-size:2rem; font-weight:bold;">0</p>
+      <h3>💰 Total Invested</h3>
+      <p id="totalInvested" style="font-size:2rem; font-weight:bold;">$0</p>
+      <h3>🚀 Trending Profits</h3>
+      <p id="trendingProfit" style="font-size:1.5rem;">BTC +12%, GOLD +4%</p>
+    </div>
+
+    <!-- Deposit / Invest Panel -->
+    <div class="card" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+      <h3 style="color:#fff;">💎 Invest / Deposit</h3>
+      <input id="invest-amount" type="number" placeholder="Amount to invest" />
+      <select id="invest-asset">
+        <option value="BTC">Bitcoin</option>
+        <option value="ETH">Ethereum</option>
+        <option value="GOLD">Gold</option>
+        <option value="SILVER">Silver</option>
+        <option value="PLATINUM">Platinum</option>
+      </select>
+      <button class="btn" onclick="deposit()">Deposit</button>
+    </div>
+
+    <!-- Portfolio Table (same as before) -->
+    <div class="card">
+      <h3>📊 Portfolio</h3>
+      <table id="portfolioTable">
+        <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+async function deposit(){
+  const amount = parseFloat(document.getElementById("invest-amount").value);
+  const asset = document.getElementById("invest-asset").value;
+  if(isNaN(amount) || amount <= 0){ alert("Enter a valid amount"); return; }
+
+  const user = firebase.auth().currentUser;
+  if(!user){ alert("Login first"); return; }
+
+  // Update user portfolio
+  const ref = db.ref('users/'+user.uid+'/portfolio/'+asset);
+  const snapshot = await ref.get();
+  const current = snapshot.exists() ? snapshot.val() : 0;
+  await ref.set(current + amount);
+
+  // Show updated portfolio
+  loadPortfolio(user.uid);
+
+  alert(`Successfully invested $${amount} in ${asset}`);
+  
+  // Update total hype stats
+  updateHypeStats(amount);
+}
+
+// 
+let totalUsers = 1234;
+let totalInvested = 567890;
+function updateHypeStats(newAmount=0){
+  totalInvested += newAmount;
+  document.getElementById("totalUsers").innerText = totalUsers.toLocaleString();
+  document.getElementById("totalInvested").innerText = "$" + totalInvested.toLocaleString();
+  document.getElementById("trendingProfit").innerText = `BTC +${(Math.random()*15).toFixed(1)}%, GOLD +${(Math.random()*5).toFixed(1)}%`;
+}
+updateHypeStats();
+</script>
+
+
+     
     }
   }
 }
