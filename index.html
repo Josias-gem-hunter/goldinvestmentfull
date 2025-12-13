@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Trading Dashboard</title>
-
 <style>
 body{
   margin:0;
@@ -47,7 +46,7 @@ body{
 
 /* Hero */
 .hero{
-  height:80vh;
+  height:60vh;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -109,7 +108,11 @@ footer{
   <div class="ticker-track">
     <span>BTC $<b id="btc"></b></span>
     <span>ETH $<b id="eth"></b></span>
+    <span>LTC $<b id="ltc"></b></span>
+    <span>XRP $<b id="xrp"></b></span>
     <span>GOLD $<b id="gold"></b></span>
+    <span>SILVER $<b id="silver"></b></span>
+    <span>PLATINUM $<b id="platinum"></b></span>
   </div>
 </div>
 
@@ -127,11 +130,6 @@ footer{
   <div class="grid">
 
     <div class="card">
-      <h3>Gold (XAU/USD)</h3>
-      <div id="tv-gold" style="height:400px"></div>
-    </div>
-
-    <div class="card">
       <h3>Bitcoin (BTC/USD)</h3>
       <div id="tv-btc" style="height:400px"></div>
     </div>
@@ -141,6 +139,31 @@ footer{
       <div id="tv-eth" style="height:400px"></div>
     </div>
 
+    <div class="card">
+      <h3>Litecoin (LTC/USD)</h3>
+      <div id="tv-ltc" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>XRP (XRP/USD)</h3>
+      <div id="tv-xrp" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Gold (XAU/USD)</h3>
+      <div id="tv-gold" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Silver (XAG/USD)</h3>
+      <div id="tv-silver" style="height:400px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Platinum (XPT/USD)</h3>
+      <div id="tv-platinum" style="height:400px"></div>
+    </div>
+
     <!-- PORTFOLIO -->
     <div class="card">
       <h3>Portfolio</h3>
@@ -148,7 +171,11 @@ footer{
         <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
         <tr><td>BTC</td><td>0.25</td><td class="green">+12.4%</td></tr>
         <tr><td>ETH</td><td>2.1</td><td class="green">+6.8%</td></tr>
+        <tr><td>LTC</td><td>10</td><td class="green">+3.2%</td></tr>
+        <tr><td>XRP</td><td>500</td><td class="red">-2.1%</td></tr>
         <tr><td>GOLD</td><td>1.5 oz</td><td class="red">-1.2%</td></tr>
+        <tr><td>SILVER</td><td>20 oz</td><td class="green">+0.5%</td></tr>
+        <tr><td>PLATINUM</td><td>5 oz</td><td class="green">+1.1%</td></tr>
       </table>
     </div>
 
@@ -170,25 +197,42 @@ function tv(id,symbol){
     container_id:id
   });
 }
-// Use generic USD symbols instead of Binance
-tv("tv-gold","OANDA:XAUUSD");
+
+// Cryptocurrencies
 tv("tv-btc","COINBASE:BTCUSD");
 tv("tv-eth","COINBASE:ETHUSD");
+tv("tv-ltc","COINBASE:LTCUSD");
+tv("tv-xrp","COINBASE:XRPUSD");
+
+// Metals
+tv("tv-gold","OANDA:XAUUSD");
+tv("tv-silver","OANDA:XAGUSD");
+tv("tv-platinum","OANDA:XPTUSD");
 </script>
 
 <!-- LIVE PRICES -->
 <script>
 async function prices(){
   const d = await fetch(
-    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd"
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd"
   ).then(r=>r.json());
 
-  const btc=d.bitcoin.usd, eth=d.ethereum.usd;
+  const btc=d.bitcoin.usd,
+        eth=d.ethereum.usd,
+        ltc=d.litecoin.usd,
+        xrp=d.ripple.usd;
+
   const gold=(2350+Math.random()*5).toFixed(2);
+  const silver=(28+Math.random()*0.5).toFixed(2);
+  const platinum=(1020+Math.random()*5).toFixed(2);
 
   document.getElementById("btc").innerText=btc.toLocaleString();
   document.getElementById("eth").innerText=eth.toLocaleString();
+  document.getElementById("ltc").innerText=ltc.toLocaleString();
+  document.getElementById("xrp").innerText=xrp.toLocaleString();
   document.getElementById("gold").innerText=gold;
+  document.getElementById("silver").innerText=silver;
+  document.getElementById("platinum").innerText=platinum;
 }
 prices(); setInterval(prices,8000);
 </script>
@@ -197,7 +241,7 @@ prices(); setInterval(prices,8000);
 <script>
 function login(){
   localStorage.setItem("logged","yes");
-  alert("Login successful (demo)");
+  alert("Register first (real)");
 }
 
 async function connectWallet(){
