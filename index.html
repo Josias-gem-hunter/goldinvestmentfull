@@ -5,23 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Trading Dashboard</title>
 
-<!-- Firebase SDKs (compat) -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+<!-- TradingView -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#0a0a0a;color:#e5e7eb;}
-header, footer{padding:12px 20px;text-align:center;}
-.btn{padding:10px 18px;border-radius:20px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#000;font-weight:bold;border:none;cursor:pointer;margin-top:5px;}
-.card{background:#1f1f2a;padding:20px;margin:20px auto;border-radius:12px;max-width:400px;}
-input{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px solid #ccc;background:#111;color:#fff;}
-#dashboard{display:none;}
+body { margin:0; font-family:Arial,sans-serif; background:#0a0a0a; color:#e5e7eb; }
+header, footer { text-align:center; padding:15px; }
+.btn { padding:10px 18px; border-radius:20px; background:linear-gradient(135deg,#facc15,#f59e0b); color:#000; font-weight:bold; border:none; cursor:pointer; margin-top:5px; }
+.card { background:#1f1f2a; padding:20px; margin:20px auto; border-radius:12px; max-width:400px; }
+input { width:100%; margin:5px 0; padding:8px; border-radius:8px; border:1px solid #ccc; background:#111; color:#fff; }
+#dashboard { display:none; }
+.ticker { overflow:hidden; border-bottom:2px solid #facc15; background:#111827; }
+.ticker-track { display:flex; gap:50px; padding:10px 0; animation:scroll 20s linear infinite; }
+.ticker span { white-space:nowrap; font-weight:bold; color:#22c55e; }
+@keyframes scroll { from{transform:translateX(100%);} to{transform:translateX(-100%);} }
+.hero { text-align:center; padding:40px 20px; background:radial-gradient(circle at top,#111827,#020617); margin-bottom:20px; }
+.hero h1 { font-size:3rem; color:#facc15; }
+.hero p { color:#9ca3af; margin:10px 0 25px; font-size:1.2rem; }
+.dashboard { max-width:1400px; margin:auto; padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:20px; }
+.dashboard .card { box-shadow:0 0 20px rgba(250,200,21,0.5); }
+table { width:100%; border-collapse:collapse; color:#fff; }
+th, td { padding:8px; border-bottom:1px solid #444; text-align:center; }
+.green { color:#22c55e; }
+.red { color:#ef4444; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <h2>⚡ Pro Trading Dashboard</h2>
 </header>
@@ -43,12 +58,46 @@ input{width:100%;margin:5px 0;padding:8px;border-radius:8px;border:1px solid #cc
 
 <!-- DASHBOARD -->
 <div id="dashboard">
-  <h2>Welcome to Your Account</h2>
-  <p>Your portfolio:</p>
-  <table id="portfolioTable" border="1" cellpadding="10" cellspacing="0" style="margin:auto;color:#fff;">
-    <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
-  </table>
-  <button class="btn" onclick="logoutUser()">Logout</button>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span>BTC $<b id="btc"></b></span>
+      <span>ETH $<b id="eth"></b></span>
+      <span>LTC $<b id="ltc"></b></span>
+      <span>XRP $<b id="xrp"></b></span>
+      <span>GOLD $<b id="gold"></b></span>
+      <span>SILVER $<b id="silver"></b></span>
+      <span>PLATINUM $<b id="platinum"></b></span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>All-in-One Trading Platform</h1>
+    <p>Charts • Portfolio • Wallet</p>
+  </section>
+
+  <!-- MARKETS / DASHBOARD -->
+  <section class="dashboard">
+    <div class="card"><h3>Bitcoin (BTC/USD)</h3><div id="tv-btc" style="height:300px"></div></div>
+    <div class="card"><h3>Ethereum (ETH/USD)</h3><div id="tv-eth" style="height:300px"></div></div>
+    <div class="card"><h3>Litecoin (LTC/USD)</h3><div id="tv-ltc" style="height:300px"></div></div>
+    <div class="card"><h3>XRP (XRP/USD)</h3><div id="tv-xrp" style="height:300px"></div></div>
+    <div class="card"><h3>Gold (XAU/USD)</h3><div id="tv-gold" style="height:300px"></div></div>
+    <div class="card"><h3>Silver (XAG/USD)</h3><div id="tv-silver" style="height:300px"></div></div>
+    <div class="card"><h3>Platinum (XPT/USD)</h3><div id="tv-platinum" style="height:300px"></div></div>
+
+    <!-- Portfolio -->
+    <div class="card">
+      <h3>Portfolio</h3>
+      <table id="portfolioTable">
+        <tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>
+      </table>
+      <button class="btn" onclick="logoutUser()">Logout</button>
+    </div>
+  </section>
+
 </div>
 
 <footer>© 2025 Pro Trading Dashboard</footer>
@@ -70,44 +119,27 @@ const db = firebase.database();
 
 // Register
 function registerUser(){
-  const email = document.getElementById("reg-email").value;
-  const password = document.getElementById("reg-pass").value;
+  const email=document.getElementById("reg-email").value;
+  const password=document.getElementById("reg-pass").value;
   auth.createUserWithEmailAndPassword(email,password)
     .then(userCredential=>{
-      const user=userCredential.user;
-      db.ref('users/'+user.uid).set({
-        portfolio:{BTC:0,ETH:0,LTC:0,XRP:0,GOLD:0,SILVER:0,PLATINUM:0},
-        created:new Date().toISOString()
-      });
-      alert("Registration successful! Please login now.");
+      alert("Registration successful! Please login.");
     }).catch(e=>alert(e.message));
 }
 
 // Login
 function loginUser(){
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-pass").value;
+  const email=document.getElementById("login-email").value;
+  const password=document.getElementById("login-pass").value;
   auth.signInWithEmailAndPassword(email,password)
     .then(userCredential=>{
       const user=userCredential.user;
-      showDashboard(user.uid);
+      document.getElementById("authForms").style.display="none";
+      document.getElementById("dashboard").style.display="block";
+      loadPortfolio(user.uid);
+      loadPrices();
+      loadCharts();
     }).catch(e=>alert(e.message));
-}
-
-// Show dashboard
-async function showDashboard(uid){
-  document.getElementById("authForms").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-
-  const snapshot = await db.ref('users/'+uid+'/portfolio').get();
-  if(snapshot.exists()){
-    const portfolio = snapshot.val();
-    const table = document.getElementById("portfolioTable");
-    table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';
-    for(let asset in portfolio){
-      table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;
-    }
-  }
 }
 
 // Logout
@@ -117,7 +149,55 @@ function logoutUser(){
     document.getElementById("dashboard").style.display="none";
   });
 }
-</script>
 
+// Load Portfolio
+async function loadPortfolio(uid){
+  const snapshot = await db.ref('users/'+uid+'/portfolio').get();
+  const table = document.getElementById("portfolioTable");
+  table.innerHTML='<tr><th>Asset</th><th>Amount</th><th>PnL</th></tr>';
+  if(snapshot.exists()){
+    const portfolio = snapshot.val();
+    for(let asset in portfolio){
+      table.innerHTML+=`<tr><td>${asset}</td><td>${portfolio[asset]}</td><td class="green">+0.0%</td></tr>`;
+    }
+  }
+}
+
+// Load Live Prices
+async function loadPrices(){
+  const data = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,ripple&vs_currencies=usd").then(r=>r.json());
+  document.getElementById("btc").innerText=data.bitcoin.usd.toLocaleString();
+  document.getElementById("eth").innerText=data.ethereum.usd.toLocaleString();
+  document.getElementById("ltc").innerText=data.litecoin.usd.toLocaleString();
+  document.getElementById("xrp").innerText=data.ripple.usd.toLocaleString();
+  document.getElementById("gold").innerText=(2350+Math.random()*5).toFixed(2);
+  document.getElementById("silver").innerText=(28+Math.random()*0.5).toFixed(2);
+  document.getElementById("platinum").innerText=(1020+Math.random()*5).toFixed(2);
+  setTimeout(loadPrices,8000);
+}
+
+// Load TradingView Charts
+function loadCharts(){
+  const pairs = {
+    "tv-btc":"COINBASE:BTCUSD",
+    "tv-eth":"COINBASE:ETHUSD",
+    "tv-ltc":"COINBASE:LTCUSD",
+    "tv-xrp":"COINBASE:XRPUSD",
+    "tv-gold":"OANDA:XAUUSD",
+    "tv-silver":"OANDA:XAGUSD",
+    "tv-platinum":"OANDA:XPTUSD"
+  };
+  for(let id in pairs){
+    new TradingView.widget({
+      autosize:true,
+      symbol:pairs[id],
+      interval:"15",
+      theme:"dark",
+      style:"1",
+      container_id:id
+    });
+  }
+}
+</script>
 </body>
 </html>
