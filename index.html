@@ -15,17 +15,20 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#e5e7eb}
-header{text-align:center;padding:20px;font-size:24px;font-weight:bold}
+
+/* BASIC */
 .grid{max-width:1200px;margin:auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
 .card{background:#121826;padding:20px;border-radius:16px}
 .btn{padding:12px;border:none;border-radius:12px;background:#22c55e;font-weight:bold;cursor:pointer}
 input,select{width:100%;padding:10px;margin:6px 0;background:#020617;color:#fff;border:1px solid #333;border-radius:8px}
-#dashboard{display:none}
 table{width:100%;border-collapse:collapse}
 td,th{padding:8px;border-bottom:1px solid #333}
 .ticker{display:flex;gap:20px;padding:10px;border-bottom:1px solid #333}
 
-/* ===== ADDED PROFESSIONAL UI ===== */
+/* HIDE DASHBOARD INITIALLY */
+#dashboard{display:none}
+
+/* ===== PRO UI ===== */
 :root{
   --neon:#22c55e;
   --blue:#3b82f6;
@@ -36,7 +39,7 @@ body{
   background: radial-gradient(circle at top,#0f172a,#020617);
 }
 
-/* TOP BAR */
+/* TOP BAR (ONLY INSIDE DASHBOARD) */
 .topbar{
   position:fixed;
   top:0;
@@ -94,10 +97,10 @@ body{
   color:#020617;
 }
 
-/* OFFSET */
-#dashboard{
+/* DASHBOARD OFFSET */
+.dashboard-content{
   margin-left:240px;
-  margin-top:90px;
+  padding-top:90px;
 }
 
 /* HERO */
@@ -128,36 +131,18 @@ body{
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="logo">PRO TRADE</div>
-  <div class="nav-links">
-    <a href="#">Markets</a>
-    <a href="#">Portfolio</a>
-    <a href="#">News</a>
-    <a href="#">Support</a>
-  </div>
-</div>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <a href="#">📊 Dashboard</a>
-  <a href="#">💰 Invest</a>
-  <a href="#">📈 Markets</a>
-  <a href="#">📰 News</a>
-  <a href="#">⚙ Settings</a>
-</div>
-
-<header>⚡ Pro Trading Dashboard</header>
-
-<!-- AUTH -->
+<!-- AUTH / LOGIN -->
 <div id="authForms" class="grid">
   <div class="card">
+    <h2 style="text-align:center">⚡ Pro Trading</h2>
+
     <h3>Register</h3>
     <input id="regEmail" placeholder="Email">
     <input id="regPass" type="password" placeholder="Password">
     <button class="btn" onclick="registerUser()">Register</button>
+
     <hr>
+
     <h3>Login</h3>
     <input id="loginEmail" placeholder="Email">
     <input id="loginPass" type="password" placeholder="Password">
@@ -168,63 +153,85 @@ body{
 <!-- DASHBOARD -->
 <div id="dashboard">
 
-<div class="hero card">
-  <h1>Trade Smarter. Grow Faster 🚀</h1>
-  <p>Real-time crypto, gold & market data trusted by modern investors.</p>
-</div>
-
-<div class="card" style="height:520px">
-  <div id="tv-hero" style="height:100%"></div>
-</div>
-
-<div class="ticker">
-  <span>BTC $<b id="btc">0</b></span>
-  <span>ETH $<b id="eth">0</b></span>
-  <span>GOLD $<b id="gold">0</b></span>
-</div>
-
-<div class="grid">
-  <div class="card">
-    <h3>💎 Invest</h3>
-    <input id="investAmount" type="number" placeholder="Amount">
-    <select id="investAsset">
-      <option value="BTC">BTC</option>
-      <option value="ETH">ETH</option>
-      <option value="GOLD">GOLD</option>
-    </select>
-    <button class="btn" onclick="deposit()">Deposit</button>
+  <!-- NAV BAR -->
+  <div class="topbar">
+    <div class="logo">PRO TRADE</div>
+    <div class="nav-links">
+      <a href="#">Markets</a>
+      <a href="#">Portfolio</a>
+      <a href="#">News</a>
+      <a href="#">Support</a>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>📊 Portfolio</h3>
-    <table id="portfolioTable">
-      <tr><th>Asset</th><th>Amount</th></tr>
-    </table>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <a href="#">📊 Dashboard</a>
+    <a href="#">💰 Invest</a>
+    <a href="#">📈 Markets</a>
+    <a href="#">📰 News</a>
+    <a href="#">⚙ Settings</a>
   </div>
 
-  <div class="card">
-    <h3>📈 Asset Allocation</h3>
-    <div class="pie"></div>
-    <p style="text-align:center;color:#9ca3af;margin-top:10px">
-      BTC • ETH • GOLD
-    </p>
+  <!-- CONTENT -->
+  <div class="dashboard-content">
+
+    <div class="hero card">
+      <h1>Trade Smarter. Grow Faster 🚀</h1>
+      <p>Real-time crypto, gold & market data trusted by modern investors.</p>
+    </div>
+
+    <div class="card" style="height:520px">
+      <div id="tv-hero" style="height:100%"></div>
+    </div>
+
+    <div class="ticker">
+      <span>BTC $<b id="btc">0</b></span>
+      <span>ETH $<b id="eth">0</b></span>
+      <span>GOLD $<b id="gold">0</b></span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>💎 Invest</h3>
+        <input id="investAmount" type="number" placeholder="Amount">
+        <select id="investAsset">
+          <option value="BTC">BTC</option>
+          <option value="ETH">ETH</option>
+          <option value="GOLD">GOLD</option>
+        </select>
+        <button class="btn" onclick="deposit()">Deposit</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 Portfolio</h3>
+        <table id="portfolioTable">
+          <tr><th>Asset</th><th>Amount</th></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>📈 Allocation</h3>
+        <div class="pie"></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card" style="height:400px" id="tv-btc"></div>
+      <div class="card" style="height:400px" id="tv-gold"></div>
+    </div>
+
+    <div class="card" style="height:420px">
+      <div id="tv-news"></div>
+    </div>
+
+    <button class="btn" onclick="logoutUser()">Logout</button>
+
   </div>
-</div>
-
-<div class="grid">
-  <div class="card" style="height:400px" id="tv-btc"></div>
-  <div class="card" style="height:400px" id="tv-gold"></div>
-</div>
-
-<div class="card" style="height:420px">
-  <div id="tv-news"></div>
-</div>
-
-<button class="btn" onclick="logoutUser()">Logout</button>
 </div>
 
 <script>
-// FIREBASE CONFIG
+// FIREBASE
 firebase.initializeApp({
   apiKey: "AIzaSyB-aVVMfBNUoMWIK0ahfAG_c3wVGkpLtkM",
   authDomain: "protradingdashboard.firebaseapp.com",
@@ -235,23 +242,21 @@ firebase.initializeApp({
   databaseURL: "https://protradingdashboard-default-rtdb.firebaseio.com"
 });
 
-const auth = firebase.auth();
-const db = firebase.database();
+const auth=firebase.auth();
+const db=firebase.database();
 
-/* AUTH */
 function registerUser(){
-  const email=regEmail.value;
-  const pass=regPass.value;
-  auth.createUserWithEmailAndPassword(email,pass).then(res=>{
-    db.ref("users/"+res.user.uid).set({portfolio:{BTC:0,ETH:0,GOLD:0}});
-    alert("Registered successfully!");
+  auth.createUserWithEmailAndPassword(regEmail.value,regPass.value)
+  .then(r=>{
+    db.ref("users/"+r.user.uid).set({portfolio:{BTC:0,ETH:0,GOLD:0}});
+    alert("Registered!");
   }).catch(e=>alert(e.message));
 }
 
 function loginUser(){
   auth.signInWithEmailAndPassword(loginEmail.value,loginPass.value)
-    .then(res=>showDashboard(res.user.uid))
-    .catch(e=>alert(e.message));
+  .then(r=>showDashboard(r.user.uid))
+  .catch(e=>alert(e.message));
 }
 
 function logoutUser(){
@@ -260,7 +265,6 @@ function logoutUser(){
   authForms.style.display="grid";
 }
 
-/* DASHBOARD */
 function showDashboard(uid){
   authForms.style.display="none";
   dashboard.style.display="block";
@@ -268,55 +272,35 @@ function showDashboard(uid){
   loadCharts();
 }
 
-/* PORTFOLIO */
 async function loadPortfolio(uid){
   const snap=await db.ref("users/"+uid+"/portfolio").get();
   portfolioTable.innerHTML='<tr><th>Asset</th><th>Amount</th></tr>';
-  const p=snap.val();
-  for(let k in p){
-    portfolioTable.innerHTML+=`<tr><td>${k}</td><td>${p[k]}</td></tr>`;
+  for(let k in snap.val()){
+    portfolioTable.innerHTML+=`<tr><td>${k}</td><td>${snap.val()[k]}</td></tr>`;
   }
 }
 
-/* DEPOSIT */
 async function deposit(){
   const u=auth.currentUser;
-  const asset=investAsset.value;
-  const amount=parseFloat(investAmount.value);
-  const ref=db.ref("users/"+u.uid+"/portfolio/"+asset);
+  const ref=db.ref("users/"+u.uid+"/portfolio/"+investAsset.value);
   const cur=(await ref.get()).val()||0;
-  ref.set(cur+amount);
+  ref.set(cur+Number(investAmount.value));
   loadPortfolio(u.uid);
 }
 
-/* PRICES */
 async function prices(){
   const d=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd").then(r=>r.json());
   btc.innerText=d.bitcoin.usd;
   eth.innerText=d.ethereum.usd;
   gold.innerText=(2350+Math.random()*5).toFixed(2);
 }
-prices(); setInterval(prices,8000);
+prices();setInterval(prices,8000);
 
-/* CHARTS */
 function loadCharts(){
   new TradingView.widget({container_id:"tv-btc",symbol:"BTCUSD",theme:"dark"});
   new TradingView.widget({container_id:"tv-gold",symbol:"XAUUSD",theme:"dark"});
-
-  new TradingView.widget({
-    container_id:"tv-hero",
-    symbol:"BTCUSDT",
-    interval:"30",
-    theme:"dark",
-    allow_symbol_change:true
-  });
-
-  new TradingView.widget({
-    container_id:"tv-news",
-    theme:"dark",
-    feedMode:"all_symbols",
-    locale:"en"
-  });
+  new TradingView.widget({container_id:"tv-hero",symbol:"BTCUSDT",theme:"dark"});
+  new TradingView.widget({container_id:"tv-news",theme:"dark",feedMode:"all_symbols"});
 }
 </script>
 
